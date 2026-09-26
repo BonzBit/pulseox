@@ -1,0 +1,10 @@
+[Unit]
+Description=Purge old pulseox SQLite rows and vacuum
+After=poxs.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/sam/poxs-purge.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

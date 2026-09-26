@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly pulseox database purge
+
+[Timer]
+OnCalendar=Sun 02:15:00
+Persistent=true
+Unit=poxs-purge.service
+
+[Install]
+WantedBy=timers.target
