@@ -1,0 +1,5 @@
+*.db
+*.db.bak
+*.dbk
+last_update.txt
+phpliteadmin.config.php

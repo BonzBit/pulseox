@@ -1,0 +1,13 @@
+[Unit]
+Description=Pulse Oximeter Serial Reader
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/php /home/sam/poxs.php
+WorkingDirectory=/home/sam
+User=sam
+Group=sam
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
