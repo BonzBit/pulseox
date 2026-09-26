@@ -1,0 +1,11 @@
+[Unit]
+Description=Check pulseox serial reader every 30 seconds
+
+[Timer]
+OnBootSec=45
+OnUnitActiveSec=30
+AccuracySec=5
+Unit=poxs-watchdog.service
+
+[Install]
+WantedBy=timers.target

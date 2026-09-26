@@ -1,0 +1,7 @@
+[Unit]
+Description=Restart poxs if serial samples stop
+After=poxs.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/sam/poxs-watchdog.sh

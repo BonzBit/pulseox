@@ -21,23 +21,16 @@ $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // query result will look like the following:
 // 11/17/12 06:47:24 SPO2=092% BPM=128
-// Check if there are any records first
-$count_query = $dbh->prepare("SELECT COUNT(*) from pulseox");
-$count_query->execute();
-$record_count = $count_query->fetchColumn();
-
-if ($record_count == 0) {
-    throw new Exception("No records found in database");
-}
-
-// Get all columns including any exception data
 $query=$dbh->prepare("SELECT stampdate, stamptime, spo2, bpm, * from pulseox order by id desc limit 1");
 $query->execute();
 $result=$query->fetch(PDO::FETCH_ASSOC);
 
 if (!$result) {
-    throw new Exception("Failed to fetch latest record");
+    throw new Exception("No records found in database");
 }
+
+$last_stampdate = isset($result['stampdate']) ? $result['stampdate'] : '';
+$last_stamptime = isset($result['stamptime']) ? $result['stamptime'] : '';
 
 // Safely extract data with null checks
 $chart_bpm_data = isset($result['bpm']) ? $result['bpm'] : '';
@@ -202,6 +195,8 @@ catch(PDOException $e)
     $data = "var data = new google.visualization.DataTable();\ndata.addColumn('timeofday', 'Time');\ndata.addColumn('number', 'BPM');\ndata.addColumn('number', 'SPO2');\ndata.addRows([]);";
     $exception_msg = 'Database connection failed';
     $hide = FALSE;
+    $last_stampdate = '';
+    $last_stamptime = '';
 }
 catch(Exception $e)
 {
@@ -215,6 +210,8 @@ catch(Exception $e)
     $data = "var data = new google.visualization.DataTable();\ndata.addColumn('timeofday', 'Time');\ndata.addColumn('number', 'BPM');\ndata.addColumn('number', 'SPO2');\ndata.addRows([]);";
     $exception_msg = $e->getMessage();
     $hide = FALSE;
+    $last_stampdate = '';
+    $last_stamptime = '';
 }
 
 ?>
@@ -366,7 +363,13 @@ data.addRows([
 -->
     <div id="chart3" style="float:left; width: 150px; height: 150px;"></div>
     <div id="chart4" style="float:left; width: 150px; height: 150px;"></div>
-    <div id="updated" style="float:left; text-align:center; width: 300px;"><?php echo "Updated " . date("m/d/Y g:i:s a"); ?></div>
+    <div id="updated" style="float:left; text-align:center; width: 300px;"><?php
+      if ($last_stampdate !== '' && $last_stamptime !== '') {
+          echo "Updated " . htmlspecialchars($last_stampdate) . " " . htmlspecialchars($last_stamptime);
+      } else {
+          echo "Updated unknown";
+      }
+    ?></div>
     <div id="disclaimer" style="float:left; text-align:center; width: 300px; font-size:50%; font:italic;">Averages are based on last 3600 readings (approximately 1 hour)</div>
   </div>
   </body>
